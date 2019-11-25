@@ -10,17 +10,14 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-@available(iOS 8.0, *)
 public func Alert(title: String?, message: String?) -> AlertController  {
     return AlertController(title: title, message: message, preferredStyle: .alert)
 }
 
-@available(iOS 8.0, *)
 public func ActionSheet(title: String?, message: String?) -> AlertController {
     return AlertController(title: title, message: message, preferredStyle: .actionSheet)
 }
 
-@available(iOS 8.0, *)
 public class AlertController: NSObject {
 
     public struct Result {
