@@ -10,17 +10,14 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-@available(iOS 8.0, *)
 public func Alert(title: String?, message: String?) -> AlertController  {
     return AlertController(title: title, message: message, preferredStyle: .alert)
 }
 
-@available(iOS 8.0, *)
 public func ActionSheet(title: String?, message: String?) -> AlertController {
     return AlertController(title: title, message: message, preferredStyle: .actionSheet)
 }
 
-@available(iOS 8.0, *)
 public class AlertController: NSObject {
 
     public struct Result {
@@ -40,7 +37,7 @@ public class AlertController: NSObject {
     private  var retainSelf: Any?
     private  let disposeBag = DisposeBag()
 
-    init(title: String?, message: String?, preferredStyle: UIAlertControllerStyle) {
+    init(title: String?, message: String?, preferredStyle: UIAlertController.Style) {
         alertController = .init(title:title, message:message, preferredStyle:preferredStyle)
 
         super.init()
@@ -56,12 +53,12 @@ public class AlertController: NSObject {
         retainSelf = self
     }
 
-    public func addAction(title: String, style: UIAlertActionStyle = .default,
+    public func addAction(title: String, style: UIAlertAction.Style = .default,
                           configure: ((UIAlertController, UIAlertAction) -> Void)? = nil) -> Self {
         let action = UIAlertAction(title: title, style: style) { [unowned self] action in
 
             let result = Result(alert: self.alertController, buttonTitle: title,
-                                buttonIndex: self.alertController.actions.index(of: action) ?? 0)
+                                buttonIndex: self.alertController.actions.firstIndex(of: action) ?? 0)
 
             self.observer?.onNext(result)
             self.observer?.onCompleted()
@@ -73,7 +70,7 @@ public class AlertController: NSObject {
     }
 
     @available(iOS 9.0, *)
-    public func addPreferredAction(title: String, style: UIAlertActionStyle = .default,
+    public func addPreferredAction(title: String, style: UIAlertAction.Style = .default,
                                    configure: ((UIAlertController, UIAlertAction) -> Void)? = nil) -> Self {
         return addAction(title: title, style: style) { alertController, action in
           alertController.preferredAction = action
@@ -134,8 +131,8 @@ public class AlertController: NSObject {
     private var topViewController:UIViewController? {
         var topController = self.presentedController
 
-        while topController?.childViewControllers.last != nil {
-            topController = topController?.childViewControllers.last!
+        while topController?.children.last != nil {
+            topController = topController?.children.last!
         }
 
         return topController
@@ -176,7 +173,7 @@ public class AlertController: NSObject {
 }
 
 public extension Reactive where Base: AlertController {
-    public func show(animated: Bool = true, completion: (() -> Void)? = nil) -> Observable<AlertController.Result>  {
+    func show(animated: Bool = true, completion: (() -> Void)? = nil) -> Observable<AlertController.Result>  {
         self.base.show(animated: animated, completion: completion)
 
         return Observable.create { observer in
